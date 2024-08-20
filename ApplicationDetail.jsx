@@ -7,6 +7,7 @@ const ApplicationDetail = () => {
   const [applicationDetails, setApplicationDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [photos, setPhotos] = useState({});
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
@@ -19,6 +20,17 @@ const ApplicationDetail = () => {
         }
         const data = await response.json();
         setApplicationDetails(data);
+
+        // Fetch photos for each ownerSID
+        const rolePhotos = {};
+        for (const role of data.applicationRoles || []) {
+          if (role.roleType === 'CBT(a)' && role.ownerSID) {
+            const photoResponse = await fetch(`/photo/${role.ownerSID}`);
+            const photoBlob = await photoResponse.blob();
+            rolePhotos[role.ownerSID] = URL.createObjectURL(photoBlob);
+          }
+        }
+        setPhotos(rolePhotos);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -65,6 +77,14 @@ const ApplicationDetail = () => {
             <ul>
               {filteredRoles.map((role, index) => (
                 <li key={index}>
+                  {photos[role.ownerSID] && (
+                    <img
+                      src={photos[role.ownerSID]}
+                      alt={`Photo of ${role.ownerSID}`}
+                      style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                    />
+                  )}
+                  <br />
                   <strong>Role Type:</strong> {role.roleType} <br />
                   <strong>Owner SID:</strong> {role.ownerSID || 'N/A'}
                 </li>
