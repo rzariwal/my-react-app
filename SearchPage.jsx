@@ -12,7 +12,6 @@ const SearchPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch all applications on component mount
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
@@ -34,16 +33,15 @@ const SearchPage = () => {
     fetchApplications();
   }, []);
 
-  // Filter applications based on search query
   useEffect(() => {
     if (searchQuery.trim()) {
       const filtered = allApplications.filter(app => {
-        const appIdStr = String(app.applicationId); // Ensure applicationId is treated as a string
+        const appIdStr = String(app.applicationId);
         return appIdStr.toLowerCase().startsWith(searchQuery.toLowerCase());
       });
       setFilteredApplications(filtered);
     } else {
-      setFilteredApplications([]); // Start with an empty array when query is empty
+      setFilteredApplications([]);
     }
   }, [searchQuery, allApplications]);
 
@@ -53,40 +51,40 @@ const SearchPage = () => {
 
   const handleCardClick = (appId) => {
     if (appId) {
-      navigate(`/applications/${appId}`); // Updated navigation URL
+      navigate(`/applications/${appId}`);
     }
   };
 
   return (
-    <div className="container">
+    <div className="search-page">
       <h1>Search Applications</h1>
-      <div className="search-container">
+      <div className="search-page__search-container">
         <FontAwesomeIcon icon={faSearch} style={{ marginRight: '8px', fontSize: '20px' }} />
         <input
           type="text"
           placeholder="Enter application ID to search"
           value={searchQuery}
           onChange={handleSearchChange}
-          className="search-input"
+          className="search-page__search-input"
         />
       </div>
 
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p className="error">Error: {error}</p>
+        <p className="search-page__error">Error: {error}</p>
       ) : (
         <div
-          className={`card ${filteredApplications.length === 1 ? 'clickable' : 'not-clickable'}`}
+          className={`search-page__card ${filteredApplications.length === 1 ? 'search-page__card--clickable' : 'search-page__card--not-clickable'}`}
           onClick={() => filteredApplications.length === 1 && handleCardClick(filteredApplications[0].applicationId)}
         >
           {filteredApplications.length === 0 && searchQuery.trim() ? (
             <p>No applications found</p>
           ) : (
             filteredApplications.length > 0 && (
-              <div className="card-content">
+              <div className="search-page__card-content">
                 {filteredApplications.map(app => (
-                  <div key={app.applicationId} className="card-item">
+                  <div key={app.applicationId} className="search-page__card-item">
                     <p><strong>Application ID:</strong> {app.applicationId}</p>
                     <p><strong>Name:</strong> {app.name}</p>
                     <p><strong>Short Name:</strong> {app.shortName}</p>
