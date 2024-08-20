@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import './_SearchPage.scss'; // Import the SCSS file
 
 const SearchPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');  // To hold the search input
-  const [allApplications, setAllApplications] = useState([]);  // To hold all fetched applications
-  const [filteredApplications, setFilteredApplications] = useState([]);  // To hold filtered applications
-  const [loading, setLoading] = useState(true);  // To handle loading state
-  const [error, setError] = useState(null);  // To handle errors
+  const [searchQuery, setSearchQuery] = useState('');
+  const [allApplications, setAllApplications] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/applications');  // Updated API endpoint
+        const response = await fetch('/applications');
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
         const data = await response.json();
-        setAllApplications(data.applications); // Store all applications in state
-        setFilteredApplications(data.applications); // Set initial filtered list to all applications
+        setAllApplications(data.applications);
+        setFilteredApplications(data.applications);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -37,12 +39,15 @@ const SearchPage = () => {
     setSearchQuery(query);
 
     if (query.trim()) {
-      // Filter applications where applicationId starts with the search query
       const filtered = allApplications.filter(app => String(app.applicationId).startsWith(query));
       setFilteredApplications(filtered);
     } else {
       setFilteredApplications(allApplications);
     }
+  };
+
+  const handleCardClick = (appId) => {
+    navigate(`/application/${appId}`);
   };
 
   return (
@@ -56,7 +61,7 @@ const SearchPage = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           className="search-input"
-          disabled={loading}  // Disable the search input while loading
+          disabled={loading || filteredApplications.length > 1}
         />
       </div>
 
@@ -65,8 +70,8 @@ const SearchPage = () => {
       ) : error ? (
         <p className="error">Error: {error}</p>
       ) : (
-        filteredApplications.length > 0 && (
-          <div className="card">
+        filteredApplications.length === 1 && (
+          <div className="card" onClick={() => handleCardClick(filteredApplications[0].applicationId)}>
             <h2>Applications</h2>
             {filteredApplications.map((app) => (
               <div key={app.applicationId} className="card-item">
