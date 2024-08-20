@@ -85,15 +85,16 @@ const SearchPage = () => {
           className={`card ${filteredApplications.length === 1 ? 'clickable' : 'not-clickable'}`}
           onClick={() => filteredApplications.length === 1 && handleCardClick(filteredApplications[0].applicationId)}
         >
-          <h2>Application</h2>
-          {filteredApplications.length === 1 ? (
-            <div className="card-item">
-              <p><strong>Application ID:</strong> {filteredApplications[0].applicationId}</p>
-              <p><strong>Name:</strong> {filteredApplications[0].name}</p>
-              <p><strong>Short Name:</strong> {filteredApplications[0].shortName}</p>
-            </div>
+          {filteredApplications.length === 0 ? (
+            <p>No applications found</p>
           ) : (
-            <p>{filteredApplications.length === 0 ? 'No applications found' : 'Please refine your search to a single application'}</p>
+            filteredApplications.length === 1 && (
+              <div className="card-item">
+                <p><strong>Application ID:</strong> {filteredApplications[0].applicationId}</p>
+                <p><strong>Name:</strong> {filteredApplications[0].name}</p>
+                <p><strong>Short Name:</strong> {filteredApplications[0].shortName}</p>
+              </div>
+            )
           )}
         </div>
       )}
