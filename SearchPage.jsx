@@ -23,7 +23,7 @@ const SearchPage = () => {
         }
         const data = await response.json();
         setAllApplications(data.applications);
-        setFilteredApplications(data.applications);
+        setFilteredApplications([]); // Start with an empty array
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,21 +34,22 @@ const SearchPage = () => {
     fetchApplications();
   }, []);
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    if (query.trim()) {
-      const filtered = allApplications.filter(app => String(app.applicationId).startsWith(query));
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const filtered = allApplications.filter(app => app.applicationId.startsWith(searchQuery));
       setFilteredApplications(filtered);
     } else {
-      setFilteredApplications(allApplications);
+      setFilteredApplications([]); // Start with an empty array when query is empty
     }
+  }, [searchQuery, allApplications]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleCardClick = (appId) => {
     if (appId) {
-      navigate(`/application/${appId}`);
+      navigate(`/applications/${appId}`); // Updated navigation URL
     }
   };
 
@@ -73,14 +74,12 @@ const SearchPage = () => {
       ) : (
         filteredApplications.length === 1 && (
           <div className="card" onClick={() => handleCardClick(filteredApplications[0].applicationId)}>
-            <h2>Applications</h2>
-            {filteredApplications.map((app) => (
-              <div key={app.applicationId} className="card-item">
-                <p><strong>Application ID:</strong> {app.applicationId}</p>
-                <p><strong>Name:</strong> {app.name}</p>
-                <p><strong>Short Name:</strong> {app.shortName}</p>
-              </div>
-            ))}
+            <h2>Application</h2>
+            <div className="card-item">
+              <p><strong>Application ID:</strong> {filteredApplications[0].applicationId}</p>
+              <p><strong>Name:</strong> {filteredApplications[0].name}</p>
+              <p><strong>Short Name:</strong> {filteredApplications[0].shortName}</p>
+            </div>
           </div>
         )
       )}
