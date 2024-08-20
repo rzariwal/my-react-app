@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import './SearchPage.css'; // Import the CSS file
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');  // To hold the search input
@@ -14,7 +15,7 @@ const SearchPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/api/applications?value=name,shortName');
+        const response = await fetch('/applications');  // Updated API endpoint
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
@@ -36,35 +37,34 @@ const SearchPage = () => {
 
     if (query.trim()) {
       // Filter applications where applicationId starts with the search query
-      const filtered = allApplications.filter(app => app.applicationId.startsWith(query));
+      const filtered = allApplications.filter(app => String(app.applicationId).startsWith(query));
       setFilteredApplications(filtered);
     } else {
-      // If search query is empty, clear the filtered list
       setFilteredApplications([]);
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
+    <div className="container">
       <h1>Search Applications</h1>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+      <div className="search-container">
         <FontAwesomeIcon icon={faSearch} style={{ marginRight: '8px', fontSize: '20px' }} />
         <input
           type="text"
           placeholder="Enter application ID to search"
           value={searchQuery}
           onChange={handleSearchChange}
-          style={{ padding: '10px', width: '300px', fontSize: '16px', border: '1px solid #ccc', borderRadius: '8px' }}
+          className="search-input"
         />
       </div>
 
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+      {error && <p className="error">Error: {error}</p>}
       {filteredApplications.length > 0 && (
-        <div style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '8px', textAlign: 'center', width: '400px' }}>
+        <div className="card">
           <h2>Applications</h2>
           {filteredApplications.map((app) => (
-            <div key={app.applicationId} style={{ marginBottom: '10px' }}>
+            <div key={app.applicationId} className="card-item">
               <p><strong>Application ID:</strong> {app.applicationId}</p>
               <p><strong>Name:</strong> {app.name}</p>
               <p><strong>Short Name:</strong> {app.shortName}</p>
