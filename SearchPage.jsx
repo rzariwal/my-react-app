@@ -15,12 +15,13 @@ const SearchPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/applications?value=name,shortName');  // Updated API endpoint
+        const response = await fetch('/applications');  // Updated API endpoint
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
         const data = await response.json();
         setAllApplications(data.applications); // Store all applications in state
+        setFilteredApplications(data.applications); // Set initial filtered list to all applications
       } catch (err) {
         setError(err.message);
       } finally {
@@ -40,7 +41,7 @@ const SearchPage = () => {
       const filtered = allApplications.filter(app => String(app.applicationId).startsWith(query));
       setFilteredApplications(filtered);
     } else {
-      setFilteredApplications([]);
+      setFilteredApplications(allApplications);
     }
   };
 
@@ -55,22 +56,27 @@ const SearchPage = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           className="search-input"
+          disabled={loading}  // Disable the search input while loading
         />
       </div>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="error">Error: {error}</p>}
-      {filteredApplications.length > 0 && (
-        <div className="card">
-          <h2>Applications</h2>
-          {filteredApplications.map((app) => (
-            <div key={app.applicationId} className="card-item">
-              <p><strong>Application ID:</strong> {app.applicationId}</p>
-              <p><strong>Name:</strong> {app.name}</p>
-              <p><strong>Short Name:</strong> {app.shortName}</p>
-            </div>
-          ))}
-        </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p className="error">Error: {error}</p>
+      ) : (
+        filteredApplications.length > 0 && (
+          <div className="card">
+            <h2>Applications</h2>
+            {filteredApplications.map((app) => (
+              <div key={app.applicationId} className="card-item">
+                <p><strong>Application ID:</strong> {app.applicationId}</p>
+                <p><strong>Name:</strong> {app.name}</p>
+                <p><strong>Short Name:</strong> {app.shortName}</p>
+              </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   );
