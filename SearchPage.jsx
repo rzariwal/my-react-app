@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './_SearchPage.scss'; // Import the SCSS file
+import './_SearchPage.scss'; // Import SCSS file
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -12,6 +12,7 @@ const SearchPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch all applications on component mount
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
@@ -34,9 +35,17 @@ const SearchPage = () => {
     fetchApplications();
   }, []);
 
+  // Filter applications based on search query
   useEffect(() => {
+    console.log('Search Query:', searchQuery);
+    console.log('All Applications:', allApplications);
+
     if (searchQuery.trim()) {
-      const filtered = allApplications.filter(app => app.applicationId.startsWith(searchQuery));
+      const filtered = allApplications.filter(app => {
+        const appIdStr = String(app.applicationId); // Ensure applicationId is treated as a string
+        return appIdStr.toLowerCase().startsWith(searchQuery.toLowerCase());
+      });
+      console.log('Filtered Applications:', filtered);
       setFilteredApplications(filtered);
     } else {
       setFilteredApplications([]); // Start with an empty array when query is empty
