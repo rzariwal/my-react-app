@@ -47,7 +47,9 @@ const SearchPage = () => {
   };
 
   const handleCardClick = (appId) => {
-    navigate(`/application/${appId}`);
+    if (appId) {
+      navigate(`/application/${appId}`);
+    }
   };
 
   return (
@@ -61,7 +63,6 @@ const SearchPage = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           className="search-input"
-          // Always enable the search input
         />
       </div>
 
