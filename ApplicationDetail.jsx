@@ -44,8 +44,8 @@ const ApplicationDetail = () => {
   // Extract necessary details
   const { name, shortName, applicationRoles } = applicationDetails;
 
-  // Find the application owner in applicationRoles
-  const owner = applicationRoles?.find(role => role.roleType === 'owner')?.workersid || 'N/A';
+  // Filter roles to include only those with roleType 'CBT(a)'
+  const filteredRoles = applicationRoles?.filter(role => role.roleType === 'CBT(a)');
 
   return (
     <div className="application-detail">
@@ -60,8 +60,19 @@ const ApplicationDetail = () => {
           <p>{shortName}</p>
         </div>
         <div className="application-detail__card">
-          <h2>Owner</h2>
-          <p>{owner}</p>
+          <h2>Roles</h2>
+          {filteredRoles?.length > 0 ? (
+            <ul>
+              {filteredRoles.map((role, index) => (
+                <li key={index}>
+                  <strong>Role Type:</strong> {role.roleType} <br />
+                  <strong>Owner SID:</strong> {role.ownerSID || 'N/A'}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No 'CBT(a)' roles available</p>
+          )}
         </div>
       </div>
     </div>
