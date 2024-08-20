@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './SearchPage.css'; // Import the CSS file
+import './_SearchPage.scss'; // Import the SCSS file
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');  // To hold the search input
@@ -15,7 +15,7 @@ const SearchPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/applications');  // Updated API endpoint
+        const response = await fetch('/applications?value=name,shortName');  // Updated API endpoint
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
