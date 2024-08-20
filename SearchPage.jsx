@@ -19,8 +19,7 @@ const SearchPage = () => {
           throw new Error('Failed to fetch applications');
         }
         const data = await response.json();
-        setAllApplications(data.applications);
-        setFilteredApplications(data.applications); // Initialize with all applications
+        setAllApplications(data.applications); // Store all applications in state
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,13 +33,14 @@ const SearchPage = () => {
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
+
     if (query.trim()) {
       // Filter applications where applicationId starts with the search query
       const filtered = allApplications.filter(app => app.applicationId.startsWith(query));
       setFilteredApplications(filtered);
     } else {
-      // If search query is empty, show all applications
-      setFilteredApplications(allApplications);
+      // If search query is empty, clear the filtered list
+      setFilteredApplications([]);
     }
   };
 
