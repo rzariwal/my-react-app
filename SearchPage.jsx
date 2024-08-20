@@ -17,7 +17,7 @@ const SearchPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('/applications');
+        const response = await fetch('/applications?values=name,shortName'); // Updated API endpoint
         if (!response.ok) {
           throw new Error('Failed to fetch applications');
         }
@@ -61,7 +61,7 @@ const SearchPage = () => {
           value={searchQuery}
           onChange={handleSearchChange}
           className="search-input"
-          disabled={loading || filteredApplications.length > 1}
+          // Always enable the search input
         />
       </div>
 
