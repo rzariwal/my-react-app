@@ -1,0 +1,41 @@
+/* _ApplicationDetail.scss */
+
+.application-detail {
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.application-detail h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.application-detail__cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.application-detail__card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.application-detail__card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.application-detail__card p {
+  font-size: 16px;
+}
+
+.application-detail__error {
+  color: red;
+  text-align: center;
+}
