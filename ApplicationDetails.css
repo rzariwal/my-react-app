@@ -1,33 +1,73 @@
+// ApplicationDetail.scss
+
 .application-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
+  background-color: #f8f9fa;
 
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  &__cards {
+  .card-container {
     display: flex;
-    justify-content: space-between; /* Distribute space between the cards */
-    gap: 20px; /* Space between the cards */
+    flex-wrap: wrap;
+    gap: 16px; // Space between cards
+    justify-content: center;
+    width: 100%; // Ensure cards do not exceed container width
   }
 
-  &__card {
-    background-color: #f4f4f4;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    flex: 1; /* Allows cards to be equal width */
-    min-width: 200px; /* Minimum width of each card */
-    text-align: center;
-  }
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 300px; // Set a fixed width for cards
+    min-height: 150px; // Set a minimum height for cards
 
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
 
-  li {
-    margin: 10px 0;
+    img {
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    .card-content {
+      flex: 1;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
   }
 }
