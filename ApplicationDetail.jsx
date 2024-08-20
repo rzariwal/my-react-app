@@ -22,14 +22,21 @@ const ApplicationDetail = () => {
         setApplicationDetails(data);
 
         // Fetch photos for each ownerSID
-        const rolePhotos = {};
-        for (const role of data.applicationRoles || []) {
-          if (role.roleType === 'CBT(a)' && role.ownerSID) {
+      const fetchPhotoPromises = (data.applicationRoles || []).map(async (role) => {
+        if (role.roleType === 'CBT(a)' && role.ownerSID) {
+          try {
             const photoResponse = await fetch(`/photo/${role.ownerSID}`);
-            const photoBlob = await photoResponse.blob();
-            rolePhotos[role.ownerSID] = URL.createObjectURL(photoBlob);
+            if (photoResponse.ok) {
+              const photoBlob = await photoResponse.blob();
+              rolePhotos[role.ownerSID] = URL.createObjectURL(photoBlob);
+            }
+          } catch (err) {
+            console.error(`Failed to fetch photo for ${role.ownerSID}:`, err);
           }
         }
+      });
+
+      await Promise.all(fetchPhotoPromises);
         setPhotos(rolePhotos);
       } catch (err) {
         setError(err.message);
@@ -77,16 +84,18 @@ const ApplicationDetail = () => {
             <ul>
               {filteredRoles.map((role, index) => (
                 <li key={index}>
-                  {photos[role.ownerSID] && (
-                    <img
-                      src={photos[role.ownerSID]}
-                      alt={`Photo of ${role.ownerSID}`}
-                      style={{ width: '50px', height: '50px', borderRadius: '50%' }}
-                    />
-                  )}
-                  <br />
-                  <strong>Role Type:</strong> {role.roleType} <br />
-                  <strong>Owner SID:</strong> {role.ownerSID || 'N/A'}
+    <strong>Role Type:</strong> {role.roleType} <br />
+    <strong>Owner SID:</strong> {role.ownerSID || 'N/A'}
+    {photos[role.ownerSID] && (
+      <div>
+        <p>Photo:</p>
+        <img
+          src={photos[role.ownerSID]}
+          alt={`Photo of ${role.ownerSID}`}
+          style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+        />
+      </div>
+    )}
                 </li>
               ))}
             </ul>
