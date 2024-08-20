@@ -1,41 +1,33 @@
-/* _ApplicationDetail.scss */
-
 .application-detail {
   padding: 20px;
-  box-sizing: border-box;
-}
 
-.application-detail h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-.application-detail__cards {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  &__cards {
+    display: flex;
+    justify-content: space-between; /* Distribute space between the cards */
+    gap: 20px; /* Space between the cards */
+  }
 
-.application-detail__card {
-  border: 1px solid #ddd;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  background-color: #fff;
-  width: 300px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  &__card {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Allows cards to be equal width */
+    min-width: 200px; /* Minimum width of each card */
+    text-align: center;
+  }
 
-.application-detail__card h2 {
-  margin-top: 0;
-  font-size: 18px;
-}
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
 
-.application-detail__card p {
-  font-size: 16px;
-}
-
-.application-detail__error {
-  color: red;
-  text-align: center;
+  li {
+    margin: 10px 0;
+  }
 }
