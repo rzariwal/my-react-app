@@ -1,41 +1,38 @@
-/* SearchPage.css */
-
 .container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  flex-direction: column;
+  // Your container styles
 }
 
 .search-container {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .search-input {
-  padding: 10px;
-  width: 300px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  // Your search input styles
 }
 
 .card {
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   padding: 20px;
+  margin-top: 20px;
   border-radius: 8px;
-  text-align: center;
-  width: 100%;
-  max-width: 600px; /* Limit the maximum width of the card */
-  overflow-y: auto; /* Add vertical scrollbar if content overflows */
-  max-height: 400px; /* Set a maximum height for the card */
-  box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional: add some shadow for better visual effect */
+  cursor: not-allowed; // Default to not-allowed cursor
+  transition: background-color 0.3s;
+
+  &.clickable {
+    cursor: pointer; // Change cursor to pointer when clickable
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+
+  &.not-clickable {
+    background-color: #e9ecef;
+  }
 }
 
 .card-item {
-  margin-bottom: 10px;
+  // Your card item styles
 }
 
 .error {
