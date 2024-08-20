@@ -81,16 +81,21 @@ const SearchPage = () => {
       ) : error ? (
         <p className="error">Error: {error}</p>
       ) : (
-        filteredApplications.length === 1 && (
-          <div className="card" onClick={() => handleCardClick(filteredApplications[0].applicationId)}>
-            <h2>Application</h2>
+        <div
+          className={`card ${filteredApplications.length === 1 ? 'clickable' : 'not-clickable'}`}
+          onClick={() => filteredApplications.length === 1 && handleCardClick(filteredApplications[0].applicationId)}
+        >
+          <h2>Application</h2>
+          {filteredApplications.length === 1 ? (
             <div className="card-item">
               <p><strong>Application ID:</strong> {filteredApplications[0].applicationId}</p>
               <p><strong>Name:</strong> {filteredApplications[0].name}</p>
               <p><strong>Short Name:</strong> {filteredApplications[0].shortName}</p>
             </div>
-          </div>
-        )
+          ) : (
+            <p>{filteredApplications.length === 0 ? 'No applications found' : 'Please refine your search to a single application'}</p>
+          )}
+        </div>
       )}
     </div>
   );
