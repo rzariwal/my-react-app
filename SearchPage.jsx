@@ -21,12 +21,13 @@ const SearchPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/applications?value=${query}`);
+      const response = await fetch(`/api/applications?value=${encodeURIComponent(query)}`);
       if (!response.ok) {
         throw new Error('Failed to fetch applications');
       }
       const data = await response.json();
-      setApplications(data);
+      console.log('Fetched applications:', data); // Debug log
+      setApplications(data.applications); // Access the applications array from the response
     } catch (err) {
       setError(err.message);
     } finally {
