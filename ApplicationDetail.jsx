@@ -38,4 +38,16 @@ const ApplicationDetail = () => {
       ) : (
         applicationDetails && (
           <div className="detail-card">
-      
+            <h1>Application Details</h1>
+            <p><strong>Application ID:</strong> {applicationDetails.applicationId}</p>
+            <p><strong>Name:</strong> {applicationDetails.name}</p>
+            <p><strong>Short Name:</strong> {applicationDetails.shortName}</p>
+            {/* Add more details as needed */}
+          </div>
+        )
+      )}
+    </div>
+  );
+};
+
+export default ApplicationDetail;
