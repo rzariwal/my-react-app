@@ -1,14 +1,34 @@
 const renderMetricsTable = (metricsData) => {
-    // Filter metrics by DORA and Agile dimensions
-    const doraMetrics = metricsData.filter(metric => metric.Dimension === "DORA");
-    const agileMetrics = metricsData.filter(metric => metric.Dimension === "AGILE");
+    const getMetricValue = (metric, key) => {
+        return metric[key] !== undefined ? metric[key] : '';
+    };
 
-    // Generate table rows
+    // Extract all possible metric types to ensure they are displayed correctly
+    const extractMetricRows = (metrics) => {
+        return metrics.flatMap(metric => {
+            const metricRows = [];
+            for (const [key, value] of Object.entries(metric)) {
+                if (key !== 'Dimension' && key !== 'MetricDate#MetricType' && key !== 'SealId') {
+                    metricRows.push({
+                        Dimension: metric.Dimension,
+                        MetricType: metric['MetricDate#MetricType'].split('#')[1],
+                        Metric: key,
+                        Value: value
+                    });
+                }
+            }
+            return metricRows;
+        });
+    };
+
+    const doraMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "DORA"));
+    const agileMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "AGILE"));
+
     const renderRows = (metrics) => {
-        return metrics.map(metric => (
-            <tr key={`${metric['MetricDate#MetricType']}-${metric.Metric}`}>
+        return metrics.map((metric, index) => (
+            <tr key={index}>
                 <td>{metric.Dimension}</td>
-                <td>{metric['MetricDate#MetricType'].split('#')[1]}</td>
+                <td>{metric.MetricType}</td>
                 <td>{metric.Metric}</td>
                 <td>{metric.Value}</td>
             </tr>
