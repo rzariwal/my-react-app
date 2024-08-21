@@ -1,22 +1,26 @@
-.metrics-table {
-    width: 100%;
-    border-collapse: collapse;
+.application-detail {
+    .metrics-heading {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.5em; // Adjust the size as needed
+    }
 
-    th, td {
-        padding: 8px;
-        text-align: left;
+    .metrics-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .metrics-table th,
+    .metrics-table td {
         border: 1px solid #ddd;
+        padding: 8px;
     }
 
-    th {
+    .metrics-table th {
         background-color: #f4f4f4;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    tr:hover {
-        background-color: #f1f1f1;
+        font-weight: bold;
+        text-align: left;
     }
 }
+
