@@ -70,9 +70,10 @@ const ApplicationDetail = ({ applicationId }) => {
 
     metrics.forEach((metric) => {
       const dimension = metric.Dimension;
+      const metricType = metric["MetricDate#MetricType"].split("#")[1];
+      
       Object.keys(metric).forEach(key => {
-        if (key !== 'Dimension' && key !== 'SealId' && key.includes('MetricDate#MetricType')) {
-          const metricType = key.split('#')[1];
+        if (key !== 'Dimension' && key !== 'SealId' && key !== 'MetricDate#MetricType') {
           addMetric(dimension, metricType, key, metric[key]);
         }
       });
