@@ -1,4 +1,7 @@
-const renderMetricsTable = (metricsData, scoresData) => {
+import React, { useState, useEffect } from 'react';
+import './ApplicationDetail.scss';
+
+const ApplicationDetail = ({ metricsData, scoreData }) => {
     const getMetricValue = (metric, key) => {
         return metric[key] !== undefined ? metric[key] : '';
     };
@@ -22,11 +25,6 @@ const renderMetricsTable = (metricsData, scoresData) => {
 
     const doraMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "DORA"));
     const agileMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "AGILE"));
-
-    const getScoreForDimension = (dimension) => {
-        const scoreData = scoresData.find(score => score.Dimension === dimension);
-        return scoreData ? scoreData.Score : 'N/A';
-    };
 
     const mergeCells = (metrics) => {
         let mergedRows = [];
@@ -65,7 +63,6 @@ const renderMetricsTable = (metricsData, scoresData) => {
                 metricTypeRowSpan: 1,
                 isFirstDimension: isNewDimension,
                 isFirstMetricType: isNewMetricType,
-                Score: getScoreForDimension(metric.Dimension),
             });
         });
 
@@ -93,38 +90,52 @@ const renderMetricsTable = (metricsData, scoresData) => {
                 )}
                 <td>{metric.Metric}</td>
                 <td>{metric.Value}</td>
-                {metric.isFirstDimension && (
-                    <td rowSpan={metric.rowSpan}>{metric.Score}</td>
-                )}
             </tr>
         ));
     };
 
+    const renderMetricsTable = (metricsData) => {
+        return (
+            <div className="metrics-section">
+                <h2 className="metrics-heading">Application Metrics</h2>
+                <table className="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>Metric Type</th>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {renderRows(doraMetrics)}
+                        {renderRows(agileMetrics)}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+
+    const calculateTotalScore = (scoreData) => {
+        let totalScore = 0;
+        scoreData.forEach(score => {
+            totalScore += parseFloat(score.Score);
+        });
+        return totalScore.toFixed(2); // Ensure 2 decimal places
+    };
+
+    const totalScore = calculateTotalScore(scoreData);
+    const scoreCardClass = totalScore < 90 ? 'score-card red' : 'score-card';
+
     return (
         <div className="application-detail">
-            <h2 className="metrics-heading">Application Metrics</h2>
-            <table className="metrics-table">
-                <thead>
-                    <tr>
-                        <th>Dimension</th>
-                        <th>MetricType</th>
-                        <th>Metric</th>
-                        <th>Value</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {renderRows(doraMetrics)}
-                    {renderRows(agileMetrics)}
-                </tbody>
-            </table>
+            {renderMetricsTable(metricsData)}
+            <div className={scoreCardClass}>
+                <h2>Total Score</h2>
+                <p>{totalScore}</p>
+            </div>
         </div>
     );
 };
 
-// Usage in your component
-return (
-    <div className="application-detail">
-        {renderMetricsTable(metricsData, scoresData)}
-    </div>
-);
+export default ApplicationDetail;
