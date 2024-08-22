@@ -1,129 +1,130 @@
-import React, { useState, useEffect } from 'react';
-import './ApplicationDetail.scss';
-
-const ApplicationDetail = ({ applicationId }) => {
-  const [applicationDetails, setApplicationDetails] = useState({});
-  const [photoUrls, setPhotoUrls] = useState({});
-  const [metricsData, setMetricsData] = useState([]);
-  const [scoresData, setScoresData] = useState([]);
-
-  useEffect(() => {
-    const fetchApplicationDetails = async () => {
-      try {
-        const response = await fetch(`/applications/${applicationId}`);
-        const data = await response.json();
-        setApplicationDetails(data);
-
-        const ownerRoles = data.applicationRoles.filter(role => role.roleType === 'CBT(a)');
-        const photos = await Promise.all(ownerRoles.map(async role => {
-          const photoResponse = await fetch(`/api/photo/${role.ownerSID}`);
-          const photoBlob = await photoResponse.blob();
-          const photoUrl = URL.createObjectURL(photoBlob);
-          return { [role.ownerSID]: photoUrl };
-        }));
-
-        setPhotoUrls(Object.assign({}, ...photos));
-      } catch (error) {
-        console.error('Error fetching application details:', error);
-      }
+const renderMetricsTable = (metricsData, scoresData) => {
+    const getMetricValue = (metric, key) => {
+        return metric[key] !== undefined ? metric[key] : '';
     };
 
-    const fetchMetricsData = async () => {
-      try {
-        const response = await fetch(`/api/metrics?sealId=${applicationId}&metricDate=2024-08-21`);
-        const metrics = await response.json();
-        setMetricsData(metrics);
-      } catch (error) {
-        console.error('Error fetching metrics data:', error);
-      }
+    const extractMetricRows = (metrics) => {
+        return metrics.flatMap(metric => {
+            const metricRows = [];
+            for (const [key, value] of Object.entries(metric)) {
+                if (key !== 'Dimension' && key !== 'MetricDate#MetricType' && key !== 'SealId') {
+                    metricRows.push({
+                        Dimension: metric.Dimension,
+                        MetricType: metric['MetricDate#MetricType'].split('#')[1],
+                        Metric: key,
+                        Value: value
+                    });
+                }
+            }
+            return metricRows;
+        });
     };
 
-    const fetchScoresData = async () => {
-      try {
-        const response = await fetch(`/api/scores?sealId=${applicationId}`);
-        const scores = await response.json();
-        setScoresData(scores);
-      } catch (error) {
-        console.error('Error fetching scores data:', error);
-      }
+    const doraMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "DORA"));
+    const agileMetrics = extractMetricRows(metricsData.filter(metric => metric.Dimension === "AGILE"));
+
+    const getScoreForDimension = (dimension) => {
+        const scoreData = scoresData.find(score => score.Dimension === dimension);
+        return scoreData ? scoreData.Score : 'N/A';
     };
 
-    fetchApplicationDetails();
-    fetchMetricsData();
-    fetchScoresData();
-  }, [applicationId]);
+    const mergeCells = (metrics) => {
+        let mergedRows = [];
+        let previousDimension = null;
+        let previousMetricType = null;
+        let dimensionRowSpan = 0;
+        let metricTypeRowSpan = 0;
 
-  const renderMetricsTable = (metrics) => {
-    const mergedMetrics = [];
+        metrics.forEach((metric, index) => {
+            const isNewDimension = metric.Dimension !== previousDimension;
+            const isNewMetricType = metric.MetricType !== previousMetricType;
 
-    const addMetric = (dimension, metricType, metricKey, metricValue) => {
-      const scoreData = scoresData.find(score => score.Dimension === dimension);
-      const score = scoreData ? scoreData.Score : 'N/A';
-      mergedMetrics.push({
-        Dimension: dimension,
-        MetricType: metricType,
-        MetricKey: metricKey,
-        MetricValue: metricValue,
-        Score: score,
-      });
-    };
+            if (isNewDimension) {
+                if (dimensionRowSpan > 0) {
+                    mergedRows[mergedRows.length - dimensionRowSpan].rowSpan = dimensionRowSpan;
+                }
+                previousDimension = metric.Dimension;
+                dimensionRowSpan = 1;
+            } else {
+                dimensionRowSpan++;
+            }
 
-    metrics.forEach((metric) => {
-      const dimension = metric.Dimension;
-      const metricType = metric["MetricDate#MetricType"].split("#")[1];
-      
-      Object.keys(metric).forEach(key => {
-        if (key !== 'Dimension' && key !== 'SealId' && key !== 'MetricDate#MetricType') {
-          addMetric(dimension, metricType, key, metric[key]);
+            if (isNewMetricType) {
+                if (metricTypeRowSpan > 0) {
+                    mergedRows[mergedRows.length - metricTypeRowSpan].metricTypeRowSpan = metricTypeRowSpan;
+                }
+                previousMetricType = metric.MetricType;
+                metricTypeRowSpan = 1;
+            } else {
+                metricTypeRowSpan++;
+            }
+
+            mergedRows.push({
+                ...metric,
+                rowSpan: 1,
+                metricTypeRowSpan: 1,
+                isFirstDimension: isNewDimension,
+                isFirstMetricType: isNewMetricType,
+                Score: getScoreForDimension(metric.Dimension),
+            });
+        });
+
+        if (dimensionRowSpan > 0) {
+            mergedRows[mergedRows.length - dimensionRowSpan].rowSpan = dimensionRowSpan;
         }
-      });
-    });
+
+        if (metricTypeRowSpan > 0) {
+            mergedRows[mergedRows.length - metricTypeRowSpan].metricTypeRowSpan = metricTypeRowSpan;
+        }
+
+        return mergedRows;
+    };
+
+    const renderRows = (metrics) => {
+        const mergedMetrics = mergeCells(metrics);
+
+        return mergedMetrics.map((metric, index) => (
+            <tr key={index}>
+                {metric.isFirstDimension && (
+                    <td rowSpan={metric.rowSpan}>{metric.Dimension}</td>
+                )}
+                {metric.isFirstMetricType && (
+                    <td rowSpan={metric.metricTypeRowSpan}>{metric.MetricType}</td>
+                )}
+                <td>{metric.Metric}</td>
+                <td>{metric.Value}</td>
+                {metric.isFirstDimension && (
+                    <td rowSpan={metric.rowSpan}>{metric.Score}</td>
+                )}
+            </tr>
+        ));
+    };
 
     return (
-      <table className="metrics-table">
-        <thead>
-          <tr>
-            <th>Dimension</th>
-            <th>MetricType</th>
-            <th>Metric</th>
-            <th>Value</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mergedMetrics.map((metric, index) => (
-            <tr key={index}>
-              <td>{index === 0 || mergedMetrics[index - 1].Dimension !== metric.Dimension ? metric.Dimension : ''}</td>
-              <td>{index === 0 || mergedMetrics[index - 1].MetricType !== metric.MetricType ? metric.MetricType : ''}</td>
-              <td>{metric.MetricKey}</td>
-              <td>{metric.MetricValue}</td>
-              <td>{metric.Score}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="application-detail">
+            <h2 className="metrics-heading">Application Metrics</h2>
+            <table className="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>MetricType</th>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {renderRows(doraMetrics)}
+                    {renderRows(agileMetrics)}
+                </tbody>
+            </table>
+        </div>
     );
-  };
-
-  return (
-    <div className="application-detail">
-      <h1>{applicationDetails.name} ({applicationDetails.shortName})</h1>
-      <div className="roles-container">
-        {applicationDetails.applicationRoles && applicationDetails.applicationRoles
-          .filter(role => role.roleType === 'CBT(a)')
-          .map(role => (
-            <div key={role.ownerSID} className="role-card">
-              <h2>Owner: {role.ownerSID}</h2>
-              {photoUrls[role.ownerSID] && (
-                <img src={photoUrls[role.ownerSID]} alt={`Owner ${role.ownerSID}`} />
-              )}
-            </div>
-          ))}
-      </div>
-      <h2>Application Metrics</h2>
-      {renderMetricsTable(metricsData)}
-    </div>
-  );
 };
 
-export default ApplicationDetail;
+// Usage in your component
+return (
+    <div className="application-detail">
+        {renderMetricsTable(metricsData, scoresData)}
+    </div>
+);
