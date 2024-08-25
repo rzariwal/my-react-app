@@ -3,7 +3,7 @@ package com.example.yourapplication.controller;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.apache.hc.core5.ssl.TrustAllStrategy;
+import org.apache.hc.core5.ssl.TrustSelfSignedStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +27,18 @@ public class ApiController {
     // Custom RestTemplate with SSL disabled
     @Bean
     public RestTemplate restTemplateWithDisabledSSL() throws Exception {
+        // Create an SSL context that accepts all certificates
         SSLContext sslContext = SSLContextBuilder.create()
-                .loadTrustMaterial(new TrustAllStrategy())
+                .loadTrustMaterial(new TrustSelfSignedStrategy())
                 .build();
 
+        // Create HttpClient with the custom SSL context
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setSSLContext(sslContext)
                 .build();
 
-        HttpComponentsClientHttpRequestFactory requestFactory =
+        // Create HttpComponentsClientHttpRequestFactory using the HttpClient
+        HttpComponentsClientHttpRequestFactory requestFactory = 
                 new HttpComponentsClientHttpRequestFactory(httpClient);
 
         return new RestTemplate(requestFactory);
