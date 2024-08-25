@@ -1,9 +1,9 @@
 package com.example.yourapplication.controller;
 
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustAllStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +28,11 @@ public class ApiController {
     @Bean
     public RestTemplate restTemplateWithDisabledSSL() throws Exception {
         SSLContext sslContext = SSLContextBuilder.create()
-                .loadTrustMaterial((chain, authType) -> true)
+                .loadTrustMaterial(new TrustAllStrategy())
                 .build();
 
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setSSLContext(sslContext)
-                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .build();
 
         HttpComponentsClientHttpRequestFactory requestFactory =
