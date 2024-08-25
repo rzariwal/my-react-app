@@ -46,6 +46,7 @@ public class ApiController {
 
     @GetMapping("/fetch-data")
     public ResponseEntity<String> fetchData() {
+        RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.example.com/data";  // Replace with the actual API URL
         String response = restTemplate.getForObject(url, String.class);
         return ResponseEntity.ok(response);
