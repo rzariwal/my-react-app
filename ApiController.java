@@ -32,4 +32,13 @@ public class ApiController {
         String response = restTemplate.getForObject(url, String.class);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/eliteapps/getmetrics")
+    public ResponseEntity<String> getMetricsBySealIdAndDate(
+            @RequestParam("seal_id") String sealId, 
+            @RequestParam("date") String date) {
+        String url = "https://api.example.com/eliteapps/getmetrics?seal_id=" + sealId + "&date=" + date;  // Replace with actual external API URL
+        String response = restTemplate.getForObject(url, String.class);
+        return ResponseEntity.ok(response);
+    }
 }
