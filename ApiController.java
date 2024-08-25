@@ -24,5 +24,12 @@ public class ApiController {
     public ResponseEntity<String> getApplicationById(@PathVariable("id") String id) {
         String url = "https://api.example.com/applications/" + id;  // Replace with actual external API URL
         String response = restTemplate.getForObject(url, String.class);
-        return ResponseEntity.ok(response);    
+        return ResponseEntity.ok(response);
+    
+    @GetMapping("/photo")
+    public ResponseEntity<String> getPhotoBySid(@RequestParam("sid") String sid) {
+        String url = "https://api.example.com/photo?sid=" + sid;  // Replace with actual external API URL
+        String response = restTemplate.getForObject(url, String.class);
+        return ResponseEntity.ok(response);
+    }
 }
