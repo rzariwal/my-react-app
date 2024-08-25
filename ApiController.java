@@ -20,4 +20,9 @@ public class ApiController {
         String response = restTemplate.getForObject(url, String.class);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/applications/{id}")
+    public ResponseEntity<String> getApplicationById(@PathVariable("id") String id) {
+        String url = "https://api.example.com/applications/" + id;  // Replace with actual external API URL
+        String response = restTemplate.getForObject(url, String.class);
+        return ResponseEntity.ok(response);    
 }
