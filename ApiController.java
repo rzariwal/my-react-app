@@ -58,10 +58,19 @@ public class ApiController {
         return ResponseEntity.ok(response);
     
     @GetMapping("/photo")
-    public ResponseEntity<String> getPhotoBySid(@RequestParam("sid") String sid) {
+    public ResponseEntity<byte[]> getPhotoBySid(@RequestParam("sid") String sid) {
+        RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.example.com/photo?sid=" + sid;  // Replace with actual external API URL
-        String response = restTemplate.getForObject(url, String.class);
-        return ResponseEntity.ok(response);
+        
+        // Fetch the image as a byte array
+        byte[] photo = restTemplate.getForObject(url, byte[].class);
+        
+        // Set the headers for the response, including content type
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "image/jpeg");  // Adjust if the image is of a different type (e.g., PNG)
+        
+        // Return the photo with the headers
+        return new ResponseEntity<>(photo, headers, HttpStatus.OK);
     }
 
     @GetMapping("/eliteapps/getmetrics")
