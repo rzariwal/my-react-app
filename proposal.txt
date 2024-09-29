@@ -1,0 +1,75 @@
+# Proposal for Automating Client Public Certificate Import to Truststore Using Ansible
+
+## Introduction
+
+In our current workflow, importing client public certificates into the truststore involves a manual process that is both time-consuming and prone to errors. The existing method requires cloning a Bitbucket repository, importing the certificate, pushing changes, and waiting for the pipeline to execute, which can take over an hour before the changes are reflected on the server. This proposal outlines a more efficient approach using Ansible automation to streamline the process, reduce manual intervention, and enhance overall reliability.
+
+## Objectives
+
+- Automate the import of client public certificates to the truststore.
+- Reduce the time taken for certificate updates from over an hour to a few minutes.
+- Use a Network Attached Storage (NAS) as the golden source for the truststore, ensuring consistency and reliability.
+- Minimize human errors and enhance operational efficiency.
+
+## Current Process Overview
+
+1. **Clone Bitbucket Repository**: The team clones the relevant Bitbucket repository containing the truststore configurations.
+2. **Import Certificate**: The team manually imports the client public certificate into the truststore.
+3. **Push Changes**: Changes are pushed back to Bitbucket.
+4. **Pipeline Execution**: The Bitbucket pipeline runs for approximately one hour to deploy changes to the server.
+5. **Manual Verification**: Post-deployment, manual checks are performed to ensure the certificate is correctly imported.
+
+## Proposed Solution
+
+### Ansible Automation
+
+Using Ansible playbooks will allow us to directly manage the server configuration and truststore updates without the need for an intermediary pipeline. The proposed steps include:
+
+1. **Ansible Playbook Development**: Create an Ansible playbook that:
+   - Connects to the target server.
+   - Imports the client public certificate directly into the truststore.
+   - Validates the import to ensure successful addition.
+
+2. **Using NAS as Golden Source**: 
+   - Store the truststore and certificates on a NAS.
+   - Configure the playbook to pull the latest certificates from the NAS, ensuring the most current version is always used.
+
+3. **Execution**: The Ansible playbook can be executed on-demand or scheduled at regular intervals to check for new certificates, automating the entire process.
+
+### Benefits
+
+- **Time Efficiency**: Reduces the overall time taken to import certificates to just a few minutes.
+- **Error Reduction**: Minimizes the risk of human errors associated with manual certificate management.
+- **Real-Time Updates**: Provides immediate reflection of changes without the delay of a pipeline process.
+- **Centralized Management**: The use of NAS for the truststore serves as a single source of truth, improving consistency.
+
+## Implementation Steps
+
+1. **Requirements Gathering**: Identify all stakeholders and gather detailed requirements for the playbook.
+2. **Playbook Development**: Develop and test the Ansible playbook in a staging environment.
+3. **NAS Configuration**: Set up the NAS for storing the truststore and ensure proper permissions are configured.
+4. **Documentation**: Document the playbook and the process for future reference and training.
+5. **Pilot Testing**: Conduct a pilot test with a select group of certificates to validate the process.
+6. **Deployment**: Roll out the solution across all environments.
+
+## Risk Management
+
+- **Access Control**: Ensure proper access controls are in place for both the NAS and the servers to prevent unauthorized access.
+- **Backup Procedures**: Implement backup procedures for the truststore and NAS to avoid data loss.
+- **Monitoring and Alerts**: Set up monitoring for the execution of the Ansible playbooks and alerts for any failures.
+
+## Conclusion
+
+Automating the import of client public certificates to the truststore using Ansible presents a significant opportunity to enhance our operational efficiency. By reducing the manual overhead and improving the speed of updates, we can better serve our clients while minimizing the potential for errors. I recommend that we proceed with the development and implementation of the proposed solution.
+
+---
+
+### Next Steps
+
+1. Schedule a meeting with stakeholders to discuss the proposal and gather feedback.
+2. Define a timeline for development and implementation.
+3. Assign roles and responsibilities for the project.
+
+--- 
+
+Thank you for considering this proposal. I look forward to your feedback and am excited about the potential improvements we can achieve through this automation initiative.
