@@ -2,28 +2,30 @@
 
 ## Introduction
 
-In our current workflow, importing client public certificates into the truststore involves a manual process that is both time-consuming and prone to errors. The existing method requires cloning a Bitbucket repository, importing the certificate, pushing changes, and waiting for the pipeline to execute, which can take over an hour before the changes are reflected on the server. This proposal outlines a more efficient approach using Ansible automation to streamline the process, reduce manual intervention, and enhance overall reliability.
+In our current workflow, importing client public certificates into the truststore involves a manual process that is both time-consuming and prone to errors. The existing method requires cloning a Bitbucket repository, importing the certificate, pushing changes, and waiting for the pipeline to execute, which can take over an hour before the package is uploaded to AIM. Finally pushing it to the servers using RO. This proposal outlines a more efficient approach using Ansible automation to streamline the process, reduce manual intervention, and enhance overall reliability.
 
 ## Objectives
 
 - Automate the import of client public certificates to the truststore.
 - Reduce the time taken for certificate updates from over an hour to a few minutes.
+- Create a self service solution for AD and operate team to manage the task on their own.
 - Use a Network Attached Storage (NAS) as the golden source for the truststore, ensuring consistency and reliability.
 - Minimize human errors and enhance operational efficiency.
+- Fail fast and shift left by having ability to quicky test things.
 
 ## Current Process Overview
 
-1. **Clone Bitbucket Repository**: The team clones the relevant Bitbucket repository containing the truststore configurations.
+1. **Clone Bitbucket Repository**: The team clones the relevant Bitbucket repository containing the truststore.
 2. **Import Certificate**: The team manually imports the client public certificate into the truststore.
 3. **Push Changes**: Changes are pushed back to Bitbucket.
-4. **Pipeline Execution**: The Bitbucket pipeline runs for approximately one hour to deploy changes to the server.
-5. **Manual Verification**: Post-deployment, manual checks are performed to ensure the certificate is correctly imported.
+4. **Pipeline Execution**: The Bitbucket pipeline runs for approximately one hour to create package and upload to AIM.
+5. **RO Execution**: RO job is excuted to finally push the changes to the servers.
 
 ## Proposed Solution
 
 ### Ansible Automation
 
-Using Ansible playbooks will allow us to directly manage the server configuration and truststore updates without the need for an intermediary pipeline. The proposed steps include:
+Using Ansible playbooks will allow us to directly manage the truststore updates without the need for an intermediary pipeline. The proposed steps include:
 
 1. **Ansible Playbook Development**: Create an Ansible playbook that:
    - Connects to the target server.
@@ -56,7 +58,7 @@ Using Ansible playbooks will allow us to directly manage the server configuratio
 
 - **Access Control**: Ensure proper access controls are in place for both the NAS and the servers to prevent unauthorized access.
 - **Backup Procedures**: Implement backup procedures for the truststore and NAS to avoid data loss.
-- **Monitoring and Alerts**: Set up monitoring for the execution of the Ansible playbooks and alerts for any failures.
+- **Monitoring and Alerts**: Set up monitoring for the execution of the Ansible playbooks and alerts for any failures. Integration with splunk to record the changes made to the trusstore.
 
 ## Conclusion
 
