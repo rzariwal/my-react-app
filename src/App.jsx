@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -8,44 +7,16 @@ import Contact from './components/Contact';
 import viteLogo from './assets/vite.svg';
 import reactLogo from './assets/react.svg';
 import './App.css';
+import useFetchPosts from './hooks/useFetchPosts';
 
 function App() {
   const [count, setCount] = useState(0);
-  const [posts, setPosts] = useState([]);
-  const [photos, setPhotos] = useState({});
   const [userId, setUserId] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;
 
-  useEffect(() => {
-    if (userId) {
-      axios.get(`https://jsonplaceholder.typicode.com/posts`, {
-        params: { userId }
-      })
-        .then(response => {
-          const postsData = response.data;
-          setPosts(postsData);
-
-          // Fetch photos for each post
-          postsData.forEach(post => {
-            axios.get(`https://jsonplaceholder.typicode.com/photos/${post.id}`)
-              .then(photoResponse => {
-                setPhotos(prevPhotos => ({
-                  ...prevPhotos,
-                  [post.id]: photoResponse.data.thumbnailUrl
-                }));
-              })
-              .catch(error => {
-                console.error('Error fetching photo:', error);
-              });
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching posts:', error);
-        });
-    }
-  }, [userId]);
+  const { posts, photos, loading, error } = useFetchPosts(userId);
 
   // Calculate the posts to display on the current page
   const indexOfLastPost = currentPage * postsPerPage;
@@ -109,6 +80,8 @@ function App() {
                   onChange={(e) => setUserId(e.target.value)}
                   placeholder="Enter userId"
                 />
+                {loading && <p>Loading...</p>}
+                {error && <p>Error: {error.message}</p>}
                 <div className="posts">
                   {currentPosts.map(post => (
                     <div key={post.id} className="post-card" onClick={() => setSelectedPost(post)}>
